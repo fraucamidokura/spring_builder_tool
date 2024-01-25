@@ -5,4 +5,4 @@ Use gradle to control all the CI CD and help developer bootstraping
 
 We will build a sample project and will grow with the tool.
 
-On the first iteration it will be a simple json rest endpoint that accepts post request.
+We will show how to add CI and CD to springboot. And ensure each PR is save and we do generate the docker image on each merge to main.
