@@ -11,13 +11,12 @@ import org.springframework.http.MediaType;
 class TaskControllerIT extends AbstractIntegrationTest {
 
   @Test
-  void sendTask() throws Exception{
-    client.perform(
-        post("/v1/tasks")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonString(TaskSampler.sample()))
-    ).andExpect(
-        status().isAccepted()
-    );
+  void sendTask() throws Exception {
+    client
+        .perform(
+            post("/v1/tasks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(TaskSampler.sample())))
+        .andExpect(status().isAccepted());
   }
 }
