@@ -35,3 +35,17 @@ processResources {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+def gitHash = 'git rev-parse --verify HEAD'.execute().text.trim()
+
+tasks.named("bootBuildImage") {
+	imageName = "ghcr.io/fraucamidokura/spring_builder_tool/task-sample:${version}${gitHash}"
+}
+
+import DockerPushTask
+
+tasks.register("bootPushImage", DockerPushTask){
+	group = "build"
+	description = "Upload your image to the loged docker registry. You must be loged in docker to call this task"
+	imageName = bootBuildImage.imageName.get()
+	dependsOn(bootBuildImage)
+}

@@ -1,0 +1,19 @@
+name: PR validation
+on:
+  pull_request: null
+  workflow_dispatch: null
+jobs:
+  validate-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project sources
+        uses: actions/checkout@v3
+      - name: Set up java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'liberica' # Default buildpack distribution
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Run build with Gradle Wrapper
+        run: ./gradlew check
