@@ -5,7 +5,4 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record Task(String name, List<URI> urls) {
-
-}
-
+public record Task(String name, List<URI> urls) {}

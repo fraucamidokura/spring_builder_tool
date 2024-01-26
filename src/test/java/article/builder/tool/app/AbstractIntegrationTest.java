@@ -11,10 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 public abstract class AbstractIntegrationTest {
 
-  @Autowired
-  protected MockMvc client;
-  @Autowired
-  ObjectMapper mapper;
+  @Autowired protected MockMvc client;
+  @Autowired ObjectMapper mapper;
 
   protected String asJsonString(final Object obj) {
     try {

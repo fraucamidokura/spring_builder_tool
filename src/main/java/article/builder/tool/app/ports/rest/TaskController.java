@@ -13,7 +13,7 @@ public class TaskController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public Task addTask(Task task){
+  public Task addTask(Task task) {
     return task;
   }
 }

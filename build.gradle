@@ -1,6 +1,7 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.1'
+    id 'java'
+    id 'org.springframework.boot' version '3.2.1'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -9,43 +10,70 @@ group = 'article.builder.tool'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '21'
+    sourceCompatibility = '21'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.apache.commons:commons-lang3'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.apache.commons:commons-lang3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 processResources {
-	filesNotMatching("banner.txt") {
-		expand(project.properties)
-	}
+    filesNotMatching("banner.txt") {
+        expand(project.properties)
+    }
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+    }
+    groovyGradle {
+        target fileTree('.') {
+            include '**/*.gradle', '**/*.groovy'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+afterEvaluate {
+    def spotless = tasks.findByName('spotlessApply')
+    if (spotless) {
+        tasks.withType(JavaCompile) {
+            finalizedBy(spotless)
+        }
+        tasks.withType(GroovyCompile) {
+            finalizedBy(spotless)
+        }
+    }
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 def gitHash = 'git rev-parse --verify HEAD'.execute().text.trim()
 
 tasks.named("bootBuildImage") {
-	imageName = "ghcr.io/fraucamidokura/spring_builder_tool/task-sample:${version}${gitHash}"
+    imageName = "ghcr.io/fraucamidokura/spring_builder_tool/task-sample:${version}${gitHash}"
 }
 
 import DockerPushTask
 
 tasks.register("bootPushImage", DockerPushTask){
-	group = "build"
-	description = "Upload your image to the loged docker registry. You must be loged in docker to call this task"
-	imageName = bootBuildImage.imageName.get()
-	dependsOn(bootBuildImage)
+    group = "build"
+    description = "Upload your image to the loged docker registry. You must be loged in docker to call this task"
+    imageName = bootBuildImage.imageName.get()
+    dependsOn(bootBuildImage)
 }
