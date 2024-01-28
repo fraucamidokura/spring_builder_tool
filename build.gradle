@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.1'
     id 'com.diffplug.spotless' version '6.25.0'
+    id 'net.researchgate.release' version '3.0.2'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -77,3 +78,5 @@ tasks.register("bootPushImage", DockerPushTask){
     imageName = bootBuildImage.imageName.get()
     dependsOn(bootBuildImage)
 }
+
+afterReleaseBuild.dependsOn bootPushImage
