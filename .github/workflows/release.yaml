@@ -20,4 +20,4 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Image to ghcr.io
-        run: ./gradlew check release
+        run: ./gradlew release
