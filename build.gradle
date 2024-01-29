@@ -78,3 +78,9 @@ tasks.register("bootPushImage", DockerPushTask){
     imageName = bootBuildImage.imageName.get()
     dependsOn(bootBuildImage)
 }
+
+release {
+    git {
+        pushOptions.set(["--force"])
+    }
+}
