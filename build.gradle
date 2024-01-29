@@ -67,7 +67,11 @@ tasks.named('test') {
 def gitHash = 'git rev-parse --verify HEAD'.execute().text.trim()
 
 tasks.named("bootBuildImage") {
-    imageName = "ghcr.io/fraucamidokura/spring_builder_tool/task-sample:${version}${gitHash}"
+    def tag = ${version}
+    if (!project.hasProperty('release')) {
+        tag = tag + gitHash
+    }
+    imageName = "ghcr.io/fraucamidokura/spring_builder_tool/task-sample:${tag}"
 }
 
 import DockerPushTask
@@ -84,3 +88,5 @@ release {
         pushOptions.set(["--force"])
     }
 }
+
+afterReleaseBuild.dependsOn bootPushImage
