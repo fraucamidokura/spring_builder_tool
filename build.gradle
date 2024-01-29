@@ -67,7 +67,7 @@ tasks.named('test') {
 def gitHash = 'git rev-parse --verify HEAD'.execute().text.trim()
 
 tasks.named("bootBuildImage") {
-    def tag = ${version}
+    def tag = version
     if (!project.hasProperty('release')) {
         tag = tag + gitHash
     }
