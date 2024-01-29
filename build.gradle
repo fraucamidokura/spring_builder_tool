@@ -8,7 +8,6 @@ plugins {
 apply plugin: 'io.spring.dependency-management'
 
 group = 'article.builder.tool'
-version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
@@ -89,4 +88,4 @@ release {
     }
 }
 
-afterReleaseBuild.dependsOn bootPushImage
+beforeReleaseBuild.dependsOn bootPushImage
