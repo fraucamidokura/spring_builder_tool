@@ -1,5 +1,6 @@
 
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
     java
@@ -58,7 +59,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-var gitHash = "This is just a simple tests"
+var gitHash = project.getGitSHA()
 var releasing = false
 gradle.taskGraph.whenReady{
     if(this.allTasks.contains(tasks.getByName("release"))){
@@ -66,9 +67,17 @@ gradle.taskGraph.whenReady{
     }
 }
 
+tasks.named("bootBuildImage",BootBuildImage::class) {
+    var tag = version.toString()
+    if (!releasing) {
+        tag += gitHash
+    }
+    imageName = "ghcr.io/fraucamidokura/spring_builder_tool/task-sample:${tag}"
+}
 
 tasks.register<DockerPushTask>("bootPushImage") {
-    imageName = gitHash
+    imageName = tasks.named("bootBuildImage",BootBuildImage::class).get().imageName
+    dependsOn("bootBuildImage")
 }
 
 tasks.named("beforeReleaseBuild"){
