@@ -7,7 +7,7 @@ plugins {
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
     id("com.diffplug.spotless") version "6.25.0"
-    id("net.researchgate.release")  version "3.0.2"
+    id("net.researchgate.release") version "3.0.2"
 }
 
 group = "com.example"
@@ -52,6 +52,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -59,27 +60,34 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-var gitHash = project.getGitSHA()
-var releasing = false
-gradle.taskGraph.whenReady{
-    if(this.allTasks.contains(tasks.getByName("release"))){
-        releasing = true
-    }
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
-tasks.named("bootBuildImage",BootBuildImage::class) {
+var gitHash = project.getGitSHA()
+var releasing = false
+gradle.taskGraph.whenReady {
+    if (this.allTasks.contains(tasks.getByName("release")))
+        {
+            releasing = true
+        }
+}
+
+tasks.named("bootBuildImage", BootBuildImage::class) {
     var tag = version.toString()
     if (!releasing) {
         tag += gitHash
     }
-    imageName = "ghcr.io/fraucamidokura/spring_builder_tool/task-sample:${tag}"
+    imageName = "ghcr.io/fraucamidokura/spring_builder_tool/task-sample:$tag"
 }
 
 tasks.register<DockerPushTask>("bootPushImage") {
-    imageName = tasks.named("bootBuildImage",BootBuildImage::class).get().imageName
+    group = "build"
+    description = "Push image to docker hub"
+    imageName = tasks.named("bootBuildImage", BootBuildImage::class).get().imageName
     dependsOn("bootBuildImage")
 }
 
-tasks.named("beforeReleaseBuild"){
+tasks.named("beforeReleaseBuild") {
     dependsOn("bootPushImage")
 }
