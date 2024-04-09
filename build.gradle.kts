@@ -91,3 +91,7 @@ tasks.register<DockerPushTask>("bootPushImage") {
 tasks.named("beforeReleaseBuild") {
     dependsOn("bootPushImage")
 }
+
+tasks.register<ClusterCreateTask>("bootRunInCluster"){
+    group = "application"
+}
