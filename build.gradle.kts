@@ -72,19 +72,20 @@ gradle.taskGraph.whenReady {
             releasing = true
         }
 }
+var tag = version.toString()
+if (!releasing) {
+    tag += gitHash
+}
+var globalImageName = "ghcr.io/fraucamidokura/spring_builder_tool/task-sample:$tag"
 
 tasks.named("bootBuildImage", BootBuildImage::class) {
-    var tag = version.toString()
-    if (!releasing) {
-        tag += gitHash
-    }
-    imageName = "ghcr.io/fraucamidokura/spring_builder_tool/task-sample:$tag"
+    imageName = globalImageName
 }
 
 tasks.register<DockerPushTask>("bootPushImage") {
     group = "build"
     description = "Push image to docker hub"
-    imageName = tasks.named("bootBuildImage", BootBuildImage::class).get().imageName
+    imageName = globalImageName
     dependsOn("bootBuildImage")
 }
 
@@ -94,4 +95,8 @@ tasks.named("beforeReleaseBuild") {
 
 tasks.register<ClusterCreateTask>("bootRunInCluster"){
     group = "application"
+    description = "Run the application into local kind cluster"
+    dependsOn("bootBuildImage")
+    imageName = globalImageName
+    imageTag = tag
 }
