@@ -1,5 +1,6 @@
 
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.tooling.model.java.JavaRuntime
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
@@ -55,11 +56,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+    testImplementation("io.cucumber:cucumber-java:7.16.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.apache.commons:commons-lang3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+sourceSets.getByName("test") {
+    java.srcDir("src/test/java")
+    java.srcDir("src/test_e2e/java")
+}
 tasks.withType<Test> {
     useJUnitPlatform()
 }
@@ -99,4 +105,17 @@ tasks.register<ClusterCreateTask>("bootRunInCluster"){
     dependsOn("bootBuildImage")
     imageName = globalImageName
     imageTag = tag
+}
+
+tasks.register<JavaExec>("cucumberTest"){
+    group = "verification"
+    description = "Run cucumber tests in the cluster"
+    dependsOn("compileTestJava")
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass = "io.cucumber.core.cli.Main"
+    args(
+        "--glue",
+        "roger.cucumber", // Replace with your Cucumber glue package
+        "src/test_e2e/features" // Path to your feature files
+    )
 }
