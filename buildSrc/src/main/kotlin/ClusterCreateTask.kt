@@ -9,10 +9,14 @@ abstract class ClusterCreateTask : DefaultTask() {
     @TaskAction
     fun execute() {
         if(!clusterExists()){
-            "kind create cluster --name builder".runCommand()
+            println("Creating cluster")
+            "kind create cluster --name builder --config buildSrc/src/main/resources/kind-cluster.yaml".runCommand()
         }
+        println("Load image")
         "kind --name builder load docker-image ${imageName.get()}".runCommand()
+        println("Deploy helm image")
         ("helm upgrade --install local ./charts --create-namespace --namespace builder --wait --atomic " +
-                "--set image.tag=${imageTag.get()}").runCommand()
+                "--set image.tag=${imageTag.get()} "+
+                "--set service.type=NodePort --set service.nodePort=31080" ).runCommand()
     }
 }

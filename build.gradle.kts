@@ -1,6 +1,5 @@
 
 import org.apache.tools.ant.filters.ReplaceTokens
-import org.gradle.tooling.model.java.JavaRuntime
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
@@ -14,14 +13,30 @@ plugins {
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
+repositories {
+    mavenCentral()
 }
 
-tasks.withType<ProcessResources> {
-    filesMatching("**/banner.txt") {
-        filter<ReplaceTokens>("tokens" to mapOf("project.version" to project.version))
-    }
+val cucumberVersion = "7.16.1"
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    testImplementation("io.cucumber:cucumber-java:$cucumberVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.apache.commons:commons-lang3")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+sourceSets.getByName("test") {
+    java.srcDir("src/test/java")
+    java.srcDir("src/test_e2e/java")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 spotless {
@@ -37,35 +52,16 @@ spotless {
     }
 }
 
+tasks.withType<ProcessResources> {
+    filesMatching("**/banner.txt") {
+        filter<ReplaceTokens>("tokens" to mapOf("project.version" to project.version))
+    }
+}
+
 tasks.named("spotlessCheck").configure {
     dependsOn("spotlessApply")
 }
 
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    testImplementation("io.cucumber:cucumber-java:7.16.1")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.apache.commons:commons-lang3")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-sourceSets.getByName("test") {
-    java.srcDir("src/test/java")
-    java.srcDir("src/test_e2e/java")
-}
 tasks.withType<Test> {
     useJUnitPlatform()
 }
@@ -110,12 +106,18 @@ tasks.register<ClusterCreateTask>("bootRunInCluster"){
 tasks.register<JavaExec>("cucumberTest"){
     group = "verification"
     description = "Run cucumber tests in the cluster"
-    dependsOn("compileTestJava")
+    dependsOn("compileTestJava","bootRunInCluster")
     classpath = sourceSets["test"].runtimeClasspath
     mainClass = "io.cucumber.core.cli.Main"
     args(
         "--glue",
-        "roger.cucumber", // Replace with your Cucumber glue package
+        "cucumber.steps", // Replace with your Cucumber glue package
         "src/test_e2e/features" // Path to your feature files
     )
+}
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
 }

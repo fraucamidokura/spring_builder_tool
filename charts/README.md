@@ -12,12 +12,7 @@ you can also run it with gradle
 gradlew bootRunInCluster
 ````
 
-To be able to access to the server you would need to make a port-forward
-
-````shell
- kubectl -n builder port-forward  service/local-builder-tool 8080:8080
-````
-
+The server is accessible by http://localhost:8080
 
 to safely clean everything just remove the kind cluster
 
