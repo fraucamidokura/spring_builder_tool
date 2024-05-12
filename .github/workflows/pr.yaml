@@ -15,5 +15,11 @@ jobs:
           java-version: 21
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
+      - name: Setup KinD
+        uses: helm/kind-action@v1.10.0
+        with:
+          install_only: true
       - name: Test project
         run: ./gradlew check
+      - name: End 2 end tests
+        run: ./gradlew cucumberTest

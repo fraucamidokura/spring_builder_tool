@@ -9,6 +9,6 @@ abstract class DockerPushTask : DefaultTask() {
   @TaskAction
   fun execute() {
     println("Will push  ${imageName.get()}")
-   "docker push ${imageName.get()}".runCommand()
+    "docker push ${imageName.get()}".runCommand()
   }
 }

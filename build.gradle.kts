@@ -13,14 +13,32 @@ plugins {
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
+repositories {
+    mavenCentral()
 }
 
-tasks.withType<ProcessResources> {
-    filesMatching("**/banner.txt") {
-        filter<ReplaceTokens>("tokens" to mapOf("project.version" to project.version))
-    }
+val cucumberVersion = "7.16.1"
+val commonsCliVersion = "1.7.0"
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    testImplementation("io.cucumber:cucumber-java:$cucumberVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.apache.commons:commons-lang3")
+    testImplementation("commons-cli:commons-cli:$commonsCliVersion")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+sourceSets.getByName("test") {
+    java.srcDir("src/test/java")
+    java.srcDir("src/test_e2e/java")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 spotless {
@@ -36,28 +54,14 @@ spotless {
     }
 }
 
-tasks.named("spotlessCheck").configure {
-    dependsOn("spotlessApply")
-}
-
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
+tasks.withType<ProcessResources> {
+    filesMatching("**/banner.txt") {
+        filter<ReplaceTokens>("tokens" to mapOf("project.version" to project.version))
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.apache.commons:commons-lang3")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+tasks.named("spotlessCheck").configure {
+    dependsOn("spotlessApply")
 }
 
 tasks.withType<Test> {
@@ -67,10 +71,9 @@ tasks.withType<Test> {
 var gitHash = project.getGitSHA()
 var releasing = false
 gradle.taskGraph.whenReady {
-    if (this.allTasks.contains(tasks.getByName("release")))
-        {
-            releasing = true
-        }
+    if (this.allTasks.contains(tasks.getByName("release"))) {
+        releasing = true
+    }
 }
 var tag = version.toString()
 if (!releasing) {
@@ -93,10 +96,31 @@ tasks.named("beforeReleaseBuild") {
     dependsOn("bootPushImage")
 }
 
-tasks.register<ClusterCreateTask>("bootRunInCluster"){
+tasks.register<ClusterCreateTask>("bootRunInCluster") {
     group = "application"
     description = "Run the application into local kind cluster"
     dependsOn("bootBuildImage")
     imageName = globalImageName
     imageTag = tag
+}
+
+tasks.register<JavaExec>("cucumberTest") {
+    group = "verification"
+    description = "Run cucumber tests in the cluster"
+    dependsOn("compileTestJava", "bootRunInCluster")
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass = "cucumber.runner.RunCucumber"
+    args(
+        "--url",
+        "http://localhost:8080",
+        "--glue",
+        "cucumber.steps",
+        "src/test_e2e/features",
+    )
+}
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
 }
