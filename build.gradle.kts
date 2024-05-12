@@ -18,6 +18,7 @@ repositories {
 }
 
 val cucumberVersion = "7.16.1"
+val commonsCliVersion = "1.7.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -27,6 +28,7 @@ dependencies {
     testImplementation("io.cucumber:cucumber-java:$cucumberVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.apache.commons:commons-lang3")
+    testImplementation("commons-cli:commons-cli:$commonsCliVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -69,10 +71,9 @@ tasks.withType<Test> {
 var gitHash = project.getGitSHA()
 var releasing = false
 gradle.taskGraph.whenReady {
-    if (this.allTasks.contains(tasks.getByName("release")))
-        {
-            releasing = true
-        }
+    if (this.allTasks.contains(tasks.getByName("release"))) {
+        releasing = true
+    }
 }
 var tag = version.toString()
 if (!releasing) {
@@ -95,7 +96,7 @@ tasks.named("beforeReleaseBuild") {
     dependsOn("bootPushImage")
 }
 
-tasks.register<ClusterCreateTask>("bootRunInCluster"){
+tasks.register<ClusterCreateTask>("bootRunInCluster") {
     group = "application"
     description = "Run the application into local kind cluster"
     dependsOn("bootBuildImage")
@@ -103,16 +104,18 @@ tasks.register<ClusterCreateTask>("bootRunInCluster"){
     imageTag = tag
 }
 
-tasks.register<JavaExec>("cucumberTest"){
+tasks.register<JavaExec>("cucumberTest") {
     group = "verification"
     description = "Run cucumber tests in the cluster"
-    dependsOn("compileTestJava","bootRunInCluster")
+    dependsOn("compileTestJava", "bootRunInCluster")
     classpath = sourceSets["test"].runtimeClasspath
-    mainClass = "io.cucumber.core.cli.Main"
+    mainClass = "cucumber.runner.RunCucumber"
     args(
+        "--url",
+        "http://localhost:8080",
         "--glue",
-        "cucumber.steps", // Replace with your Cucumber glue package
-        "src/test_e2e/features" // Path to your feature files
+        "cucumber.steps",
+        "src/test_e2e/features",
     )
 }
 
