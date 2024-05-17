@@ -17,7 +17,7 @@ repositories {
     mavenCentral()
 }
 
-val cucumberVersion = "7.16.1"
+val cucumberVersion = "7.18.0"
 val commonsCliVersion = "1.7.0"
 
 dependencies {
