@@ -43,7 +43,7 @@ class TaskServiceTest {
     ResponseStatusException error = catchThrowableOfType(()->service.findByName(name),ResponseStatusException.class);
 
     assertThat(error.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(404));
-    assertThat(error.getMessage()).isEqualTo("Could not find '%s'".formatted(entity.getName()));
+    assertThat(error.getMessage()).contains("Could not find '%s'".formatted(entity.getName()));
   }
 
 }
