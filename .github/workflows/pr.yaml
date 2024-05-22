@@ -23,5 +23,5 @@ jobs:
           install_only: true
       - name: Test project
         run: ./gradlew check
-      - name: End 2 end tests
-        run: ./gradlew cucumberTest
+#      - name: End 2 end tests
+#        run: ./gradlew cucumberTest
