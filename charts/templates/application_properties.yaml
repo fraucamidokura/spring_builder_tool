@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "builder.fullname" . }}-config
+  labels:
+    {{- include "builder.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  application.properties: |
+    spring.datasource.url=jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.database }}
+    spring.datasource.username={{ .Values.postgresql.auth.username }}
+    spring.datasource.password={{ .Values.postgresql.auth.password }}
+    spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+    spring.jpa.hibernate.ddl-auto=update
