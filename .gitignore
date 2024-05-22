@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Chart ###
+/charts/charts/
+/charts/Chart.lock
