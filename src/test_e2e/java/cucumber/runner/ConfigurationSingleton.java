@@ -1,5 +1,8 @@
 package cucumber.runner;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ConfigurationSingleton {
@@ -16,6 +19,19 @@ public class ConfigurationSingleton {
   }
 
   public static Configuration get() {
-    return singleton.get();
+    return singleton.accumulateAndGet(defaultConfiguration(),(current,def)->{
+      if(current==null){
+        return def;
+      }
+      return current;
+    });
+  }
+
+  private static Configuration defaultConfiguration(){
+    try {
+      return new Configuration(new URI("http://localhost:8080").toURL());
+    } catch (MalformedURLException | URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
