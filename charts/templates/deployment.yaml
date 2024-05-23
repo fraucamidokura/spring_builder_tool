@@ -37,6 +37,13 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          volumeMounts:
+            - name: application-properties
+              mountPath: /workspace/override.properties
+              subPath: override.properties
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: classpath:/application.properties,file:/workspace/override.properties
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
@@ -59,3 +66,10 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - name: application-properties
+          secret:
+            secretName: {{ include "builder.fullname" . }}-config
+            items:
+              - key: application.properties
+                path: override.properties

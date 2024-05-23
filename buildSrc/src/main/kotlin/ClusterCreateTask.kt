@@ -16,6 +16,8 @@ abstract class ClusterCreateTask : DefaultTask() {
     }
     println("Load image")
     "kind --name builder load docker-image ${imageName.get()}".runCommand()
+    println("update charts")
+    "helm dependency build ./charts".runCommand()
     println("Deploy helm image")
     ("helm upgrade --install local ./charts --create-namespace --namespace builder --wait --atomic " +
             "--set image.tag=${imageTag.get()} " +

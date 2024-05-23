@@ -60,8 +60,8 @@ spotless {
 }
 
 tasks.withType<ProcessResources> {
-    filesMatching("**/banner.txt") {
-        filter<ReplaceTokens>("tokens" to mapOf("project.version" to project.version))
+    filesMatching("**/application.properties") {
+        expand(project.properties)
     }
 }
 
