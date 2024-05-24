@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@SpringBootTest
+@SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @Testcontainers
 @ActiveProfiles("test")
