@@ -1,6 +1,14 @@
 # spring_builder_tool
 Use gradle to control all the CI CD and help developer bootstraping
 
+## Run application
+
+In local you can run the application with 
+
+```shell
+./gradelw bootTestRun
+```
+
 ## Sample project
 
 We will build a sample project and will grow with the tool.
