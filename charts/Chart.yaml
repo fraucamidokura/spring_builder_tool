@@ -6,5 +6,5 @@ version: 0.0.1
 appVersion: 0.0.1-SNAPSHOTa462db0a359f5af4fda1ce71677d8fd85de8365c
 dependencies:
   - name: postgresql
-    version: "15.4.0"
+    version: "15.4.1"
     repository: "https://charts.bitnami.com/bitnami"
