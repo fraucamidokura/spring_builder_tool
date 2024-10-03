@@ -1,5 +1,3 @@
-
-import org.apache.tools.ant.filters.ReplaceTokens
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
@@ -8,6 +6,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
     id("com.diffplug.spotless") version "6.25.0"
     id("net.researchgate.release") version "3.0.2"
+    id("io.gatling.gradle") version "3.12.0.2"
 }
 
 group = "com.example"
@@ -19,6 +18,7 @@ repositories {
 
 val cucumberVersion = "7.20.0"
 val commonsCliVersion = "1.9.0"
+val galtlingVersion = "3.12.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -34,6 +34,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
+    testImplementation("io.gatling.highcharts:gatling-charts-highcharts:$galtlingVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -122,6 +123,12 @@ tasks.register<JavaExec>("cucumberTest") {
         "cucumber.steps",
         "src/test_e2e/features",
     )
+}
+
+tasks.register("runGatling") {
+    group = "verification"
+    description = "Run load tests"
+    dependsOn("bootRunInCluster", "gatlingRun")
 }
 
 configurations {
