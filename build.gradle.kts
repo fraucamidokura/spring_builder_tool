@@ -18,7 +18,7 @@ repositories {
 }
 
 val cucumberVersion = "7.19.0"
-val commonsCliVersion = "1.8.0"
+val commonsCliVersion = "1.9.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
