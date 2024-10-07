@@ -26,4 +26,4 @@ jobs:
       - name: End 2 end tests
         run: ./gradlew cucumberTest
       - name: Load tests
-        run: ./gradlew runGatling
+        run: ./gradlew gatlingRun
