@@ -3,6 +3,7 @@ package article.builder.tool.app.ports.postgres;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import article.builder.tool.app.AbstractIntegrationTest;
+import article.builder.tool.app.task.Status;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +17,7 @@ class TaskRepositoryIT extends AbstractIntegrationTest {
     var name = "commonName";
     var task = new TaskEntity();
     task.setName(name);
+    task.setStatus(Status.CREATED);
 
     task = repo.save(task);
 
@@ -24,6 +26,7 @@ class TaskRepositoryIT extends AbstractIntegrationTest {
 
     assertThat(foundTask).isNotEmpty();
     assertThat(foundTask.get().getName()).isEqualTo(task.getName());
+    assertThat(foundTask.get().getStatus()).isEqualTo(Status.CREATED);
 
     repo.deleteById(task.getName());
 
