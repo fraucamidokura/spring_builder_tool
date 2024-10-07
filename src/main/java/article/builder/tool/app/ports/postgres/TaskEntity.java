@@ -3,10 +3,7 @@ package article.builder.tool.app.ports.postgres;
 import article.builder.tool.app.task.Task;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.net.URL;
 import java.util.List;
@@ -14,12 +11,10 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(indexes = @Index(name="uq_task_name",columnList = "name",unique = true))
+@Table
 public class TaskEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
 
+  @Id
   private String name;
 
   @ElementCollection
