@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import article.builder.tool.app.AbstractIntegrationTest;
+import article.builder.tool.app.task.Status;
 import article.builder.tool.app.task.Task;
 import article.builder.tool.app.task.TaskSampler;
 import java.net.URL;
@@ -20,19 +21,20 @@ class TaskControllerIT extends AbstractIntegrationTest {
   @Test
   void sendTask() throws Exception {
     Task task = TaskSampler.sample();
-    List<String> string_urls = task.urls().stream().map(URL::toString).toList();
+    List<String> stringUrls = task.urls().stream().map(URL::toString).toList();
     client
         .perform(
             post("/v1/tasks").contentType(MediaType.APPLICATION_JSON).content(asJsonString(task)))
         .andExpect(status().isAccepted())
         .andExpect(jsonPath("$.name", is(task.name())))
-        .andExpect(jsonPath("$.urls", is(string_urls)));
+        .andExpect(jsonPath("$.urls", is(stringUrls)))
+        .andExpect(jsonPath("$.status", is(Status.CREATED.name())));
   }
 
   @Test
   void basicCrud() throws Exception {
     Task task = TaskSampler.sample();
-    List<String> string_urls = task.urls().stream().map(URL::toString).toList();
+    List<String> stringUrls = task.urls().stream().map(URL::toString).toList();
     client
         .perform(
             post("/v1/tasks").contentType(MediaType.APPLICATION_JSON).content(asJsonString(task)))
@@ -43,7 +45,7 @@ class TaskControllerIT extends AbstractIntegrationTest {
             get("/v1/tasks/"+task.name())
         ).andExpect(status().isOk())
         .andExpect(jsonPath("$.name", is(task.name())))
-        .andExpect(jsonPath("$.urls", is(string_urls)));
+        .andExpect(jsonPath("$.urls", is(stringUrls)));
 
     client
         .perform(

@@ -17,7 +17,8 @@ public class TaskSampler {
   public static Task.TaskBuilder builder() throws MalformedURLException {
     return Task.builder()
         .name("task" + RandomStringUtils.randomAlphanumeric(12))
-        .urls(List.of(randomUrl(), randomUrl(), randomUrl()));
+        .urls(List.of(randomUrl(), randomUrl(), randomUrl()))
+        .status(Status.CREATED);
   }
 
   private static URL randomUrl() throws MalformedURLException {
