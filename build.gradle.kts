@@ -6,7 +6,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
     id("com.diffplug.spotless") version "6.25.0"
     id("net.researchgate.release") version "3.0.2"
-    id("io.gatling.gradle") version "3.12.0.2"
+    id("io.gatling.gradle") version "3.12.0.3"
 }
 
 group = "com.example"
