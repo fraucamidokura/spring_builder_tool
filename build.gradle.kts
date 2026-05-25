@@ -18,7 +18,7 @@ repositories {
 
 val cucumberVersion = "7.20.0"
 val commonsCliVersion = "1.9.0"
-val galtlingVersion = "3.12.0"
+val galtlingVersion = "3.15.1"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
