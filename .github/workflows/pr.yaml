@@ -18,7 +18,7 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
       - name: Setup KinD
-        uses: helm/kind-action@v1.10.0
+        uses: helm/kind-action@v1.15.0
         with:
           install_only: true
       - name: Test project
